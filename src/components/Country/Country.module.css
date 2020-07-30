@@ -1,0 +1,16 @@
+.formControl{
+    max-width: 220px ;
+    margin: 0 auto !important;
+}
+/* .formControl {
+
+    border: 0;
+    margin: 0;
+    display: flex ;
+    padding: 0;
+    position: center;
+    max-width: 150px;
+    flex-direction: column;
+    vertical-align: top;
+    text-align: center;
+} */
