@@ -3,12 +3,32 @@ import { useState, useEffect } from "react";
 import { Cards, Charts, Country } from "./components";
 import styles from "./App.module.css";
 import { fetchData } from "./api";
-import logo from "./images/logo.png";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import { Switch as Toogle, FormControlLabel } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import withStyles from "@material-ui/styles/withStyles";
+import Button from "@material-ui/core/Button";
 
+const stylesJSS = {
+  toogleButton: {
+    height: 100,
+    width: 50,
+    position: "absolute",
+    left: 1200,
+    bottom: 280,
+  },
+  themelight: {
+    opacity: 1,
+    width: 50,
+    height: 30,
+  },
+  themedark: {
+    opacity: 0,
+    width: 50,
+    height: 30,
+  },
+};
 const themeObject = {
   palette: {
     type: "light",
@@ -16,32 +36,31 @@ const themeObject = {
       light: "#33c9dc",
       main: "#00bcd4",
       dark: "#008394",
-      contrastText: "#fff",
     },
     secondary: {
       light: "#ff6333",
       main: "#ff3d00",
       dark: "#b22a00",
-      contrastText: "#fff",
     },
   },
 };
 
-export const APP = () => {
+const APP = (props) => {
   const [data, setData] = useState({});
   const [country, setCountry] = useState("global");
-  const [theme,setTheme] = useState(themeObject);
-
+  const [theme, setTheme] = useState(themeObject);
+  const { classes } = props;
   const handleCountryChange = async (country) => {
     const data = await fetchData(country);
     setData(data);
     setCountry(country);
   };
 
-  const toogleDarkMode = async ()=>{
-  const {
-    palette: { type },
-  } = theme;    console.log(type)
+  const toogleDarkMode = async () => {
+    const {
+      palette: { type },
+    } = theme;
+   // console.log(type);
     const updatedTheme = {
       // ...theme,
       palette: {
@@ -50,47 +69,83 @@ export const APP = () => {
       },
     };
     setTheme(updatedTheme);
-    localStorage.setItem('theme',type === "light" ? "dark" : "light")
+    localStorage.setItem("theme", type === "light" ? "dark" : "light");
   };
 
-  
-
   useEffect(() => {
-      setData(handleCountryChange(country));
-      if(localStorage.getItem('theme') === null) 
-      {
-        localStorage.setItem('theme','light')
-      }
-      else 
-      {
-         const type = localStorage.getItem('theme');
-             const updatedTheme = {
-      // ...theme,
-          palette: {
-         ...theme.palette,
-            type: type === "light" ? "light" : "dark",
-          },
-        };
-        setTheme(updatedTheme);        
-      }
-      
+    setData(handleCountryChange(country));
+    if (localStorage.getItem("theme") === null) {
+      localStorage.setItem("theme", "light");
+    } else {
+      const type = localStorage.getItem("theme");
+      const updatedTheme = {
+        // ...theme,
+        palette: {
+          ...theme.palette,
+          type: type === "light" ? "light" : "dark",
+        },
+      };
+      setTheme(updatedTheme);
+    }
+
     // eslint-disable-next-line
   }, []);
 
+  const muiTheme = createMuiTheme(theme);
+  const moon = (
+    <svg
+      id="moon"
+      className={classes.themelight}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
 
-    const muiTheme = createMuiTheme(theme)
+  const sun = (
+    <svg
+      id="sun"
+      className={classes.themelight}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="5" width="20px" height="20px" />
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+    </svg>
+  );
+
+  const buttonIcon = () => {
+    if (theme.palette.type === "light") {
+      return moon;
+    } else {
+      return sun;
+    }
+  };
 
   return (
     <MuiThemeProvider theme={muiTheme}>
-    <CssBaseline />
-    <div className={styles.container}>
-    <img src={logo} className={styles.image} alt="logo" />
-    <FormControlLabel control={<Toogle onClick={toogleDarkMode} checked={theme.palette.type==='dark'? true : false} />} />
-      <Cards data={data} />
-      <Country handleCountryChange={handleCountryChange} />
-      <Charts data={data} country={country} />
-    </div>
+      <CssBaseline />
+      <div className={styles.container}>
+        <Button
+          onClick={toogleDarkMode}
+          className={classes.toogleButton}
+          // disabled={theme.palette.type === "dark" ? true : false}
+        >
+        {buttonIcon()}
+        </Button>
+        <Cards data={data} />
+        <Country handleCountryChange={handleCountryChange} />
+        <Charts data={data} country={country} />
+      </div>
     </MuiThemeProvider>
   );
-}
+};
 
+export default withStyles(stylesJSS)(APP);
