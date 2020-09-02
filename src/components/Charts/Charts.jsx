@@ -44,7 +44,7 @@ const Charts = (props) => {
       );
     } else return null;
   };
-  console.log(props)
+ // console.log(props)
   const barChart = ()=>{
     if (props.data.confirmed) {
       return (
