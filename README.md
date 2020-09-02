@@ -1,4 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Watch it live [Here!](https://nifty-lovelace-8cd6b1.netlify.app/).
 
 ## Available Scripts
 
