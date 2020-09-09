@@ -9,6 +9,7 @@ import { Switch as Toogle, FormControlLabel } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import withStyles from "@material-ui/styles/withStyles";
 import Button from "@material-ui/core/Button";
+import Fade from "@material-ui/core/Fade";
 
 const stylesJSS = {
   toogleButton: {
@@ -50,6 +51,7 @@ const APP = (props) => {
   const [country, setCountry] = useState("global");
   const [theme, setTheme] = useState(themeObject);
   const { classes } = props;
+  const [themeTransition, setThemeTrans] = useState(true);
   const handleCountryChange = async (country) => {
     const data = await fetchData(country);
     setData(data);
@@ -57,10 +59,11 @@ const APP = (props) => {
   };
 
   const toogleDarkMode = async () => {
+    setThemeTrans(false);
     const {
       palette: { type },
     } = theme;
-   // console.log(type);
+    // console.log(type);
     const updatedTheme = {
       // ...theme,
       palette: {
@@ -68,8 +71,10 @@ const APP = (props) => {
         type: type === "light" ? "dark" : "light",
       },
     };
-    setTheme(updatedTheme);
     localStorage.setItem("theme", type === "light" ? "dark" : "light");
+
+    setTheme(updatedTheme);
+    setThemeTrans(true);
   };
 
   useEffect(() => {
@@ -132,18 +137,25 @@ const APP = (props) => {
   return (
     <MuiThemeProvider theme={muiTheme}>
       <CssBaseline />
-      <div className={styles.container}>
-        <Button
-          onClick={toogleDarkMode}
-          className={classes.toogleButton}
-          // disabled={theme.palette.type === "dark" ? true : false}
-        >
-        {buttonIcon()}
-        </Button>
-        <Cards data={data} />
-        <Country handleCountryChange={handleCountryChange} />
-        <Charts data={data} country={country} />
-      </div>
+
+      <Fade
+        in={themeTransition}
+        timeout={{ appear: 7000, enter: 1000, exit: 1000 }}
+      >
+        <div className={styles.container}>
+          <Button
+            id="toogleButton"
+            onClick={toogleDarkMode}
+            className={classes.toogleButton}
+            // disabled={theme.palette.type === "dark" ? true : false}
+          >
+            {buttonIcon()}
+          </Button>
+          <Cards data={data} />
+          <Country handleCountryChange={handleCountryChange} />
+          <Charts data={data} country={country} />
+        </div>
+      </Fade>
     </MuiThemeProvider>
   );
 };
